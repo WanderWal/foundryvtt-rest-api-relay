@@ -232,7 +232,15 @@ export const apiRoutes = (app: express.Application): void => {
         }
       }
       
-      const assetPath = req.params.path;
+      const assetPathParam = req.params.path;
+
+      if (Array.isArray(assetPathParam)) {
+        res.status(400).send('Invalid asset path');
+        return;
+      }
+
+      const assetPath: string = assetPathParam;
+
       const assetUrl = `${foundryBaseUrl}/${assetPath}`;
       
       log.debug(`Proxying asset request to: ${assetUrl}`);
