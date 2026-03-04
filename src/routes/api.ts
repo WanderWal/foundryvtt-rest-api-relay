@@ -25,6 +25,7 @@ import { encounterRouter } from './api/encounter';
 import { sheetRouter } from './api/sheet';
 import { macroRouter } from './api/macro';
 import { structureRouter } from './api/structure';
+import { discordRouter } from './discord';
 import { log } from '../utils/logger';
 // Import from session.ts instead of duplicating
 import { browserSessions, apiKeyToSession, pendingSessions } from './api/session';
@@ -392,6 +393,7 @@ export const apiRoutes = (app: express.Application): void => {
   app.use('/', macroRouter);
   app.use('/', structureRouter);
   app.use('/dnd5e', dnd5eRouter);
+  app.use('/api/discord', discordRouter);
 };
 
 const REQUEST_TYPES_WITH_SPECIAL_RESPONSE_HANDLERS = [

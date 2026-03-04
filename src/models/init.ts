@@ -1,5 +1,6 @@
 import { sequelize } from '../sequelize';
 import { User } from './user'; 
+import { DiscordActorLink } from './discordActorLink';
 import crypto from 'crypto';
 import { log } from '../utils/logger';
 
