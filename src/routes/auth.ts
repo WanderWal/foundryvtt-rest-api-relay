@@ -177,12 +177,7 @@ router.get('/user-data', async (req: Request, res: Response) => {
       apiKey: user.getDataValue('apiKey'),
       requestsThisMonth: user.getDataValue('requestsThisMonth'),
       requestsToday: user.getDataValue('requestsToday') || 0,
-      subscriptionStatus: user.getDataValue('subscriptionStatus') || 'free',
-      limits: {
-        dailyLimit: parseInt(process.env.DAILY_REQUEST_LIMIT || '1000'),
-        monthlyLimit: parseInt(process.env.FREE_API_REQUESTS_LIMIT || '100'),
-        unlimitedMonthly: (user.getDataValue('subscriptionStatus') === 'active')
-      }
+      subscriptionStatus: user.getDataValue('subscriptionStatus') || 'free'
     });
     return;
   } catch (error) {

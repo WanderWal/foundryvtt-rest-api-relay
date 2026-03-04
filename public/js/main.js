@@ -103,24 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("user-email").textContent = userData.email;
     document.getElementById("user-api-key").textContent = userData.apiKey;
     
-    // Update rate limits display
-    if (userData.limits) {
-      const rateLimitsEl = document.querySelector(".message.warning");
-      if (rateLimitsEl) {
-        const isUnlimited = userData.limits.unlimitedMonthly;
-        const dailyLimit = userData.limits.dailyLimit;
-        const monthlyLimit = userData.limits.monthlyLimit;
-        
-        rateLimitsEl.innerHTML = `
-          <strong>⚠️ Rate Limits:</strong> All users are limited to ${dailyLimit.toLocaleString()} requests per day. 
-          ${isUnlimited ? 
-            'You have unlimited monthly access with your subscription.' : 
-            `Free accounts are limited to ${monthlyLimit} requests per month. Subscribe for unlimited monthly access.`
-          }
-        `;
-      }
-    }
-    
     let status = userData.subscriptionStatus || 'free';
     // Update subscription UI
     updateSubscriptionUI(status);
@@ -128,15 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update request counts display
     const requestsToday = userData.requestsToday || 0;
     const requestsThisMonth = userData.requestsThisMonth || 0;
-    const limits = userData.limits || {};
-    
-    if (status !== 'active') {
-      document.getElementById("user-requests").textContent =
-        `Monthly: ${requestsThisMonth} / ${limits.monthlyLimit || 100}, Daily: ${requestsToday} / ${limits.dailyLimit || 1000}`;
-    } else {
-      document.getElementById("user-requests").textContent = 
-        `Monthly: ${requestsThisMonth} (unlimited), Daily: ${requestsToday} / ${limits.dailyLimit || 1000}`;
-    }
+    document.getElementById("user-requests").textContent =
+      `Monthly: ${requestsThisMonth}, Daily: ${requestsToday}`;
   }
 
   // Handle signup form submission

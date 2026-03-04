@@ -16,12 +16,6 @@ function updateSessionActivity(apiKey: string) {
 // Flag to check if we're using memory store
 const isMemoryStore = process.env.DB_TYPE === 'memory';
 
-// Free tier request limit per month
-const FREE_TIER_LIMIT = parseInt(process.env.FREE_API_REQUESTS_LIMIT || '100');
-
-// Daily request limit for all users (configurable via environment variable)
-const DAILY_REQUEST_LIMIT = parseInt(process.env.DAILY_REQUEST_LIMIT || '1000');
-
 declare global {
   namespace Express {
     interface Request {
@@ -135,22 +129,6 @@ export const trackApiUsage = async (req: Request, res: Response, next: NextFunct
           const currentMonthlyRequests = user.getDataValue('requestsThisMonth') || 0;
           const currentDailyRequests = user.getDataValue('requestsToday') || 0;
           
-          // Check daily rate limit
-          if (currentDailyRequests >= DAILY_REQUEST_LIMIT) {
-            // Calculate midnight of the next day for reset time
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0); // Set to midnight
-            
-            res.status(429).json({
-              error: 'Daily API request limit reached',
-              dailyLimit: DAILY_REQUEST_LIMIT,
-              message: `You have reached the daily limit of ${DAILY_REQUEST_LIMIT} requests. Please try again tomorrow.`,
-              resetsAt: tomorrow.toISOString()
-            });
-            return;
-          }
-          
           // Increment both counters
           user.setDataValue('requestsThisMonth', currentMonthlyRequests + 1);
           user.setDataValue('requestsToday', currentDailyRequests + 1);
@@ -184,47 +162,11 @@ export const trackApiUsage = async (req: Request, res: Response, next: NextFunct
             user.lastRequestDate = new Date();
           }
           
-          // Check daily rate limit
-          if (user.requestsToday >= DAILY_REQUEST_LIMIT) {
-            // Calculate midnight of the next day for reset time
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0); // Set to midnight
-            
-            res.status(429).json({
-              error: 'Daily API request limit reached',
-              dailyLimit: DAILY_REQUEST_LIMIT,
-              message: `You have reached the daily limit of ${DAILY_REQUEST_LIMIT} requests. Please try again tomorrow.`,
-              resetsAt: tomorrow.toISOString()
-            });
-            return;
-          }
-          
           user.requestsThisMonth += 1;
           user.requestsToday += 1;
           user.lastRequestDate = new Date();
           updateSessionActivity(apiKey);
         }
-        
-        // Enforce monthly limits only for free tier users
-        const subscriptionStatus = user.getDataValue ? 
-          user.getDataValue('subscriptionStatus') : user.subscriptionStatus;
-        
-        if (subscriptionStatus !== 'active') {
-          const requestCount = user.getDataValue ? 
-            user.getDataValue('requestsThisMonth') : user.requestsThisMonth;
-            
-          if (requestCount >= FREE_TIER_LIMIT) {
-            res.status(429).json({
-              error: 'Monthly API request limit reached',
-              limit: FREE_TIER_LIMIT,
-              message: 'Please upgrade to a paid subscription for unlimited monthly API access',
-              upgradeUrl: '/api/subscriptions/create-checkout-session'
-            });
-            return;
-          }
-        }
-        
         next();
       } else {
         log.warn(`API key not found: ${apiKey}`);

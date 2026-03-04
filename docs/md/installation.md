@@ -47,15 +47,6 @@ services:
 For production deployments, replace `latest` with a specific version tag (e.g., `threehats/foundryvtt-rest-api-relay:2.1.0`) to avoid unexpected breaking changes from updates.
 :::
 
-By adding:   
-```yaml
-# increase monthly request limit
-- FREE_API_REQUESTS_LIMIT=100000
-# increase daily request limit
-- DAILY_REQUEST_LIMIT=3000   
-```
-in the environment section you can increase the amount of API requests for your local installation.
-
 2.  **Start the server:**
     ```bash
     docker-compose up -d

@@ -51,7 +51,6 @@ You can either use the **public relay server** (no setup required) or **self-hos
 2. Create an account and copy your API key from the dashboard
 3. Install the [Foundry module](#3-install-the-foundry-module) and set the relay URL to `wss://foundryvtt-rest-api-relay.fly.dev`
 
-> The public relay has rate limits (100 requests/month free, 1000/day). For unlimited usage, self-host or [subscribe](https://foundryvtt-rest-api-relay.fly.dev) for $5/month.
 
 ### Option B: Self-Host with Docker
 
@@ -177,10 +176,6 @@ Key environment variables (see [full configuration guide](https://foundryvtt-res
 | `WEBSOCKET_PING_INTERVAL_MS` | `20000` | WebSocket ping interval for keep-alive |
 | `CLIENT_CLEANUP_INTERVAL_MS` | `15000` | Interval for removing inactive clients |
 | `REDIS_URL` | — | Redis URL for session storage in multi-instance deployments |
-| `FREE_API_REQUESTS_LIMIT` | `100` | Monthly API request limit per user |
-| `DAILY_REQUEST_LIMIT` | `1000` | Daily API request limit per user |
-
-> **Self-hosting tip:** Set `FREE_API_REQUESTS_LIMIT=999999999` and `DAILY_REQUEST_LIMIT=999999999` to effectively disable rate limits for local use.
 
 ---
 
