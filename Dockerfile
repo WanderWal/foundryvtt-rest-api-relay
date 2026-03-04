@@ -38,26 +38,25 @@ RUN apt-get update && apt-get install -y \
 
 # Copy package.json (and lock files if they exist)
 COPY package.json ./ 
-COPY pnpm-lock.yaml* ./ 
+COPY bun.lockb* ./
+COPY bun.lock* ./
 COPY yarn.lock* ./ 
 COPY package-lock.json* ./ 
 
 # Install dependencies with --no-optional to avoid non-essential optional deps
-RUN npm install -g pnpm && \
-    if [ -f pnpm-lock.yaml ]; then \
-      pnpm install --frozen-lockfile; \
-    elif [ -f yarn.lock ]; then \
-      yarn install --frozen-lockfile; \
+RUN npm install -g bun && \
+    if [ -f bun.lockb ] || [ -f bun.lock ]; then \
+      bun install --frozen-lockfile; \
     else \
-      npm install; \
+      bun install; \
     fi
 
 # Add node-fetch explicitly since it's needed for the forwarder
-RUN pnpm add node-fetch @types/node-fetch
+RUN bun add node-fetch @types/node-fetch
 
 # Force rebuild SQLite3 from source for the current platform
-RUN pnpm rebuild sqlite3
-RUN cd node_modules/.pnpm/sqlite3*/node_modules/sqlite3 && npm run install --build-from-source
+RUN npm rebuild sqlite3 --build-from-source
+RUN cd node_modules/sqlite3 && npm run install --build-from-source
 
 # Copy source code
 COPY src/ ./src/
@@ -65,13 +64,13 @@ COPY public/ ./public/
 COPY tsconfig.json ./
 
 # Build the application first
-RUN pnpm build
+RUN bun run build
 
 # Try to build docs if possible, but don't fail the build if it doesn't work
 COPY docs/ ./docs/
 RUN if [ -d "docs" ] && [ -f "docs/package.json" ]; then \
       echo "Attempting to build documentation..." && \
-      (cd docs && npm install && npm run build) || echo "Documentation build failed, continuing without docs"; \
+      (cd docs && bun install && bun run build) || echo "Documentation build failed, continuing without docs"; \
     else \
       echo "Skipping documentation build"; \
     fi
