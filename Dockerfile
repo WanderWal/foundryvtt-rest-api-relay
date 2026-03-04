@@ -1,9 +1,6 @@
-FROM node:20-slim
+FROM node:25-slim
 
 WORKDIR /app
-
-# Skip postinstall build during image dependency install
-ENV SKIP_POSTINSTALL=1
 
 # Install required build dependencies for bcrypt, PostgreSQL, SQLite3, and Puppeteer (Chromium)
 RUN apt-get update && apt-get install -y \
