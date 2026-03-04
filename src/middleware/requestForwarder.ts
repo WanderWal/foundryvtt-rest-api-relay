@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { log } from '../utils/logger';
 import { getRedisClient } from '../config/redis';
-import fetch from 'node-fetch';
 
 // Constants
 const INSTANCE_ID = process.env.FLY_ALLOC_ID || 'local';
@@ -118,16 +117,17 @@ export async function requestForwarderMiddleware(req: Request, res: Response, ne
     
     clearTimeout(timeoutId);
       // Copy response headers but filter out problematic ones
-    Object.entries(response.headers.raw()).forEach(([key, values]) => {
-      if (Array.isArray(values) && !['connection', 'content-length', 'transfer-encoding'].includes(key.toLowerCase())) {
-        res.setHeader(key, values);
-        
+    response.headers.forEach((value, key) => {
+      if (!['connection', 'content-length', 'transfer-encoding'].includes(key.toLowerCase())) {
+        res.setHeader(key, value);
+
         // Log important headers for debugging, especially for binary responses
         if (['content-type', 'content-disposition', 'content-encoding'].includes(key.toLowerCase())) {
-          log.info(`Forwarding header: ${key} = ${values.join(', ')}`);
+          log.info(`Forwarding header: ${key} = ${value}`);
         }
       }
-    });// Special handling for different response types based on endpoint and content type
+    });
+    // Special handling for different response types based on endpoint and content type
     if ((req.path === '/upload' && req.method === 'POST') || 
         (req.path === '/download' && req.method === 'GET')) {
       
@@ -146,7 +146,7 @@ export async function requestForwarderMiddleware(req: Request, res: Response, ne
           log.info(`Processing binary ${endpoint} response with content-type: ${responseContentType}`);
           
           // For binary responses, get the buffer and send it
-          const buffer = await response.buffer();
+          const buffer = Buffer.from(await response.arrayBuffer());
           
           if (!buffer || buffer.length === 0) {
             log.error(`Empty buffer received for ${endpoint} response`);
