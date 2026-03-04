@@ -9,7 +9,7 @@
  * @since 1.8.1
  */
 
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import { corsMiddleware } from "./middleware/cors";
@@ -84,32 +84,36 @@ app.use((req, res, next) => {
 app.use(redisSessionMiddleware);
 
 // Add global error handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   log.error('Unhandled error:', err);
   log.error(`Error on ${req.method} ${req.path}`);
   if (!res.headersSent) {
     // Handle JSON parsing errors
     if (err.type === 'entity.parse.failed' || err instanceof SyntaxError || 
         (err.message && err.message.includes('JSON'))) {
-      return res.status(400).json({ 
+      res.status(400).json({ 
         error: 'Invalid JSON format',
         message: 'The request body contains malformed JSON. Please check your JSON syntax.',
         details: err.message
       });
+      return;
     }
     
     // Handle payload too large errors
     if (err.type === 'entity.too.large') {
-      return res.status(413).json({ 
+      res.status(413).json({ 
         error: 'Request entity too large',
         message: 'The request body is too large. Please reduce the size of your request.'
       });
+      return;
     }
     
     // Default error response
     res.status(500).json({ error: 'Internal server error' });
   }
-});
+};
+
+app.use(errorHandler);
 
 // Serve static files from public directory
 app.use("/static", express.static(path.join(__dirname, "../public")));
