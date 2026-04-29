@@ -71,9 +71,6 @@ ENV DATA_DIR=/app/data
 # if you want to enforce a monthly request quota.
 ENV MONTHLY_REQUEST_LIMIT=0
 
-# Data volume
-VOLUME /app/data
-
 EXPOSE 3010
 
 # Ensure data volume is writable
