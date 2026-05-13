@@ -147,25 +147,10 @@ import axios from 'axios';
 {
   "clients": [
     {
-      "clientId": "fvtt_099ad17ea199e7e3",
-      "instanceId": "local",
-      "lastSeen": 1776657949081,
-      "connectedSince": 1776657947584,
-      "worldId": "testing",
-      "worldTitle": "testing",
-      "foundryVersion": "13.348",
-      "systemId": "dnd5e",
-      "systemTitle": "Dungeons & Dragons Fifth Edition",
-      "systemVersion": "5.0.4",
-      "ipAddress": "[::1]:37278",
-      "tokenName": "headless session 2026-04-19 23:05",
-      "isOnline": true
-    },
-    {
       "clientId": "fvtt_71dbc81bd608978a",
       "instanceId": "local",
-      "lastSeen": 1776657951294,
-      "connectedSince": 1776657951292,
+      "lastSeen": 1777996561009,
+      "connectedSince": 1777996561007,
       "worldId": "rest-api",
       "worldTitle": "rest-api",
       "foundryVersion": "12.331",
@@ -173,12 +158,42 @@ import axios from 'axios';
       "systemTitle": "Dungeons & Dragons Fifth Edition",
       "systemVersion": "4.3.8",
       "customName": "my-cool-server",
-      "ipAddress": "[::1]:37286",
-      "tokenName": "headless session 2026-04-19 23:05",
+      "ipAddress": "[::1]:32850",
+      "tokenName": "headless session 2026-05-05 15:55",
+      "isOnline": true
+    },
+    {
+      "clientId": "fvtt_099ad17ea199e7e3",
+      "instanceId": "local",
+      "lastSeen": 1777996566542,
+      "connectedSince": 1777996565043,
+      "worldId": "testing",
+      "worldTitle": "testing",
+      "foundryVersion": "13.348",
+      "systemId": "dnd5e",
+      "systemTitle": "Dungeons & Dragons Fifth Edition",
+      "systemVersion": "5.0.4",
+      "ipAddress": "[::1]:32858",
+      "tokenName": "headless session 2026-05-05 15:56",
+      "isOnline": true
+    },
+    {
+      "clientId": "fvtt_20b2e79d7d679516",
+      "instanceId": "local",
+      "lastSeen": 1777996568785,
+      "connectedSince": 1777996568785,
+      "worldId": "5e",
+      "worldTitle": "5e",
+      "foundryVersion": "14.360",
+      "systemId": "dnd5e",
+      "systemTitle": "Dungeons & Dragons Fifth Edition",
+      "systemVersion": "5.3.1",
+      "ipAddress": "[::1]:37180",
+      "tokenName": "headless session 2026-05-05 15:56",
       "isOnline": true
     }
   ],
-  "total": 2
+  "total": 3
 }
 ```
 

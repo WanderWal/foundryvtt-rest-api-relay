@@ -29,6 +29,8 @@ interface CanvasDocTypeDef {
   updateData: Record<string, any>;
   /** If true, the create data needs an actorId injected at test time */
   needsActorId?: boolean;
+  /** If true, skip all tests for this type on Foundry v14+ (e.g. MeasuredTemplate removed in v14.359) */
+  skipOnV14?: boolean;
 }
 
 const CANVAS_DOC_TYPES: CanvasDocTypeDef[] = [
@@ -67,11 +69,17 @@ const CANVAS_DOC_TYPES: CanvasDocTypeDef[] = [
     type: 'templates',
     createData: { x: 350, y: 350, t: 'circle', distance: 15 },
     updateData: { distance: 20 },
+    skipOnV14: true, // MeasuredTemplate fully removed in v14.359; use regions instead
   },
   {
     type: 'walls',
     createData: { c: [100, 100, 300, 100] },
     updateData: { c: [100, 100, 400, 100] },
+  },
+  {
+    type: 'regions',
+    createData: { name: 'Test Region', shapes: [{ type: 'ellipse', x: 200, y: 200, radiusX: 100, radiusY: 100, rotation: 0 }] },
+    updateData: { name: 'Updated Region' },
   },
 ];
 
@@ -89,6 +97,10 @@ describe('Canvas', () => {
     // ═══════════════════════════════════════════
 
     for (const docDef of CANVAS_DOC_TYPES) {
+      const shouldSkip = docDef.skipOnV14 && parseInt(version) >= 14;
+
+      if (shouldSkip) continue;
+
       describe(`/canvas/${docDef.type} (v${version})`, () => {
         const globalIdKey = `canvas_${docDef.type}_id`;
 
@@ -231,17 +243,19 @@ describe('Canvas', () => {
 
           expect(captured.response.status).toBe(200);
           expect(captured.response.data.data).toBeInstanceOf(Array);
-          expect(captured.response.data.data.length).toBe(1);
           expect(captured.response.data.documentType).toBe(docDef.type);
+          expect(captured.response.data.data.length).toBe(1);
 
-          // Verify the updated field values are reflected in the response
-          const updatedDoc = captured.response.data.data[0];
-          for (const [key, value] of Object.entries(docDef.updateData)) {
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-              // Nested objects: use partial match since Foundry may return additional fields
-              expect(updatedDoc[key]).toMatchObject(value);
-            } else {
-              expect(updatedDoc).toHaveProperty(key, value);
+          // Verify updated field values when documents were returned
+          if (captured.response.data.data.length > 0) {
+            const updatedDoc = captured.response.data.data[0];
+            for (const [key, value] of Object.entries(docDef.updateData)) {
+              if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                // Nested objects: use partial match since Foundry may return additional fields
+                expect(updatedDoc[key]).toMatchObject(value);
+              } else {
+                expect(updatedDoc).toHaveProperty(key, value);
+              }
             }
           }
         }, 30000);
@@ -356,4 +370,82 @@ describe('Canvas', () => {
     });
 
   });
+
+  forEachVersion((version, getClientId) => {
+    describe(`POST /move-token (v${version})`, () => {
+      test('POST /move-token - move a token by actor UUID', async () => {
+        setVariable('clientId', getClientId());
+
+        const actorUuid = getEntityUuid(version, 'Actor', 'primary');
+        expect(actorUuid).toBeTruthy();
+
+        const requestConfig: ApiRequestConfig = {
+          url: {
+            raw: '{{baseUrl}}/move-token',
+            host: ['{{baseUrl}}'],
+            path: ['move-token'],
+            query: [{ key: 'clientId', value: '{{clientId}}' }]
+          },
+          method: 'POST',
+          header: [
+            { key: 'x-api-key', value: '{{apiKey}}', type: 'text' },
+            { key: 'Content-Type', value: 'application/json', type: 'text' }
+          ],
+          body: {
+            mode: 'raw',
+            raw: JSON.stringify({
+              uuid: actorUuid,
+              x: 200,
+              y: 200,
+              animate: false
+            })
+          }
+        };
+
+        const captured = await captureExample(requestConfig, testVariables, '/move-token');
+        capturedExamples.push(captured);
+
+        expect(captured.response.status).toBe(200);
+        expect(captured.response.data.data).toHaveProperty('x', 200);
+        expect(captured.response.data.data).toHaveProperty('y', 200);
+        console.log(`  ✓ Moved token for actor ${actorUuid} to (200, 200)`);
+      }, 15000);
+    });
+  });
+
+  forEachVersion((version, getClientId) => {
+    describe(`GET /measure-distance (v${version})`, () => {
+      test('GET /measure-distance - measure between coordinates', async () => {
+        setVariable('clientId', getClientId());
+
+        const requestConfig: ApiRequestConfig = {
+          url: {
+            raw: '{{baseUrl}}/measure-distance',
+            host: ['{{baseUrl}}'],
+            path: ['measure-distance'],
+            query: [
+              { key: 'clientId', value: '{{clientId}}' },
+              { key: 'originX', value: '0' },
+              { key: 'originY', value: '0' },
+              { key: 'targetX', value: '500' },
+              { key: 'targetY', value: '500' }
+            ]
+          },
+          method: 'GET',
+          header: [{ key: 'x-api-key', value: '{{apiKey}}', type: 'text' }]
+        };
+
+        const captured = await captureExample(requestConfig, testVariables, '/measure-distance');
+        capturedExamples.push(captured);
+
+        expect(captured.response.status).toBe(200);
+        const data = captured.response.data.data;
+        expect(data).toHaveProperty('distance');
+        expect(data).toHaveProperty('units');
+        expect(typeof data.distance).toBe('number');
+        console.log(`  Distance: ${data.distance} ${data.units}`);
+      }, 15000);
+    });
+  });
+
 });

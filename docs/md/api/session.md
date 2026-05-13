@@ -252,8 +252,8 @@ Just don't 😂
 
 ```json
 {
-  "clientId": "fvtt_099ad17ea199e7e3",
-  "sessionId": "5dbbde56-8240-459d-a064-c9ee04152c41",
+  "clientId": "fvtt_71dbc81bd608978a",
+  "sessionId": "da5c55b6-258d-41c8-b634-8bc37b59f635",
   "success": true
 }
 ```
@@ -293,7 +293,7 @@ Stop a headless Foundry session
 const baseUrl = 'http://localhost:3010';
 const path = '/end-session';
 const params = {
-  sessionId: '5dbbde56-8240-459d-a064-c9ee04152c41'
+  sessionId: 'da5c55b6-258d-41c8-b634-8bc37b59f635'
 };
 const queryString = new URLSearchParams(params).toString();
 const url = `${baseUrl}${path}?${queryString}`;
@@ -312,7 +312,7 @@ console.log(data);
 <TabItem value="curl" label="cURL">
 
 ```bash
-curl -X DELETE 'http://localhost:3010/end-session?sessionId=5dbbde56-8240-459d-a064-c9ee04152c41' \
+curl -X DELETE 'http://localhost:3010/end-session?sessionId=da5c55b6-258d-41c8-b634-8bc37b59f635' \
   -H "x-api-key: your-api-key-here"
 ```
 
@@ -325,7 +325,7 @@ import requests
 base_url = 'http://localhost:3010'
 path = '/end-session'
 params = {
-    'sessionId': '5dbbde56-8240-459d-a064-c9ee04152c41'
+    'sessionId': 'da5c55b6-258d-41c8-b634-8bc37b59f635'
 }
 url = f'{base_url}{path}'
 
@@ -350,7 +350,7 @@ import axios from 'axios';
   const baseUrl = 'http://localhost:3010';
   const path = '/end-session';
   const params = {
-    sessionId: '5dbbde56-8240-459d-a064-c9ee04152c41'
+    sessionId: 'da5c55b6-258d-41c8-b634-8bc37b59f635'
   };
   const queryString = new URLSearchParams(params).toString();
   const url = `${baseUrl}${path}?${queryString}`;
@@ -384,7 +384,7 @@ import axios from 'axios';
   🔤/end-session🔤 ➡️ path
 
   💭 Query parameters
-  🔤sessionId=5dbbde56-8240-459d-a064-c9ee04152c41🔤 ➡️ sessionId
+  🔤sessionId=da5c55b6-258d-41c8-b634-8bc37b59f635🔤 ➡️ sessionId
   🔤?🧲sessionId🧲🔤 ➡️ queryString
 
   💭 Build HTTP request
@@ -556,19 +556,19 @@ import axios from 'axios';
 {
   "activeSessions": [
     {
-      "clientId": "fvtt_099ad17ea199e7e3",
-      "foundryUrl": "http://localhost:30013",
-      "foundryVersion": "13.348",
-      "lastActivity": 1776657947730,
-      "sessionId": "5dbbde56-8240-459d-a064-c9ee04152c41",
-      "startedAt": 1776657947730,
+      "clientId": "fvtt_71dbc81bd608978a",
+      "foundryUrl": "http://localhost:30012",
+      "foundryVersion": "12.331",
+      "lastActivity": 1777996561365,
+      "sessionId": "da5c55b6-258d-41c8-b634-8bc37b59f635",
+      "startedAt": 1777996561365,
       "systemId": "dnd5e",
       "systemTitle": "Dungeons & Dragons Fifth Edition",
-      "systemVersion": "5.0.4",
+      "systemVersion": "4.3.8",
       "username": "tester",
-      "worldId": "testing",
-      "worldName": "testing",
-      "worldTitle": "testing"
+      "worldId": "rest-api",
+      "worldName": "rest-api",
+      "worldTitle": "rest-api"
     }
   ]
 }
