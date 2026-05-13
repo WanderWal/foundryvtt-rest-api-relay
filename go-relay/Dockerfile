@@ -23,8 +23,8 @@ FROM node:22-alpine AS frontend
 WORKDIR /frontend
 # Install deps before copying content so this layer is cached on content-only changes
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN --mount=type=cache,target=/root/.cache/node/corepack \
-    --mount=type=cache,target=/root/.local/share/pnpm/store \
+RUN --mount=type=cache,id=s/5b8a2cc5-2c67-4c4c-a6a7-0cdd6a4bf7dd-/root/.cache/node/corepack,target=/root/.cache/node/corepack \
+    --mount=type=cache,id=s/5b8a2cc5-2c67-4c4c-a6a7-0cdd6a4bf7dd-/root/.local/share/pnpm/store,target=/root/.local/share/pnpm/store \
     corepack enable && pnpm install --frozen-lockfile
 COPY frontend/ .
 RUN pnpm run build
@@ -39,8 +39,8 @@ ARG ALGOLIA_INDEX_NAME
 WORKDIR /docs
 # Install deps before copying content so this layer is cached on content-only changes
 COPY docs/package.json docs/pnpm-lock.yaml ./
-RUN --mount=type=cache,target=/root/.cache/node/corepack \
-    --mount=type=cache,target=/root/.local/share/pnpm/store \
+RUN --mount=type=cache,id=s/5b8a2cc5-2c67-4c4c-a6a7-0cdd6a4bf7dd-/root/.cache/node/corepack,target=/root/.cache/node/corepack \
+    --mount=type=cache,id=s/5b8a2cc5-2c67-4c4c-a6a7-0cdd6a4bf7dd-/root/.local/share/pnpm/store,target=/root/.local/share/pnpm/store \
     corepack enable && pnpm install --frozen-lockfile
 COPY docs/ .
 RUN pnpm run build
